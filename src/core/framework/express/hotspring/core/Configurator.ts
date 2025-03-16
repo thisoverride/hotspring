@@ -7,9 +7,13 @@ export interface HotSpringConfig {
   _serviceFiles: string[]
 }
 
+export interface Ioc {
+  controllers: string
+  dependencies: string[]
+}
+
 export interface UserConfig {
-  controllersDir: string;
-  servicesDir: string;
+  ioc: Ioc
   // repositoryDir?: string;
   // logging?: Logging;
 }
@@ -28,11 +32,16 @@ export class Configurator {
   private static scanDirectories(config: UserConfig): HotSpringConfig {
     const basePath: string = process.cwd();
 
-    let controllerFiles: string[] = config.controllersDir ?
-      this.getAllFiles(path.join(basePath, config.controllersDir)) : [];
+    let controllerFiles: string[] = config.ioc.controllers ?
+      this.getAllFiles(path.join(basePath, config.ioc.controllers)) : [];
     
-    let serviceFiles: string[] = config.servicesDir ?
-      this.getAllFiles(path.join(basePath, config.servicesDir)) : [];
+    let serviceFiles: string[] = [];
+    if (config.ioc.dependencies && config.ioc.dependencies.length > 0) {
+      serviceFiles = config.ioc.dependencies.flatMap((el) => 
+        this.getAllFiles(path.join(basePath, el))
+      );
+    }
+    
     
     controllerFiles = controllerFiles.filter(file => {
       const fileName = path.basename(file, path.extname(file));

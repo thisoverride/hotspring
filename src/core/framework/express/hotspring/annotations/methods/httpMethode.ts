@@ -2,7 +2,8 @@ import 'reflect-metadata';
 import type { RequestHandler } from 'express';
 
 function createMethodDecorator (method: string) {
-  return (path: string): MethodDecorator => {
+  return (path?: string): MethodDecorator => {
+    path = path ?? '/'
     return (target: any, propertyKey: string | symbol, _descriptor: PropertyDescriptor) => {
       const existingRoutes = Reflect.getMetadata('routes', target.constructor) || [];
       existingRoutes.push({

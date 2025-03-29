@@ -1,6 +1,6 @@
-import { injectable } from 'inversify';
+import { Service } from '../core/framework/express/hotspring';
 
-@injectable()
+@Service()
 export class DefaultService {
   public renderString (): string {
     return `<!DOCTYPE html>

@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import type { Application, RequestHandler } from 'express';
-import type { Container } from 'inversify';
+import { injectable, type Container } from 'inversify';
+import { Constructor, DependecyComponentInfo } from '../../../../../@type/Global';
 
 interface RouteMetadata {
   method: string;
@@ -15,34 +16,60 @@ interface WsEventMetadata {
 }
 
 export default class HotSpring {
-  public static bind (app: Application, ioContainer: Container, ControllerClass: any, io?: any): void {
-    const controllerInstance = ioContainer.get(ControllerClass);
+  public static bind(app: Application, ioContainer: Container, classRef: DependecyComponentInfo, io?: any): void {
 
-    const routes: RouteMetadata[] = Reflect.getMetadata('routes', ControllerClass) || [];
-    routes.forEach((route: RouteMetadata) => {
-      const handler = route.handler.bind(controllerInstance);
-      const middlewares = route.middlewares || [];
-      const method = route.method as keyof Application;
+    const controllerInstance = ioContainer.get(classRef.component);
+    injectable()(controllerInstance);
 
-      if (typeof app[method] === 'function') {
-        app[method](route.path, ...middlewares, handler);
-      } else {
-        throw new Error(`The function ${method as string} is not a valid`);
+    if (classRef.type === 'controller') {
+      const basePath: string = Reflect.getMetadata('prefix', classRef.component) || '';
+      // Récupérer les métadonnées des routes
+      const routes: RouteMetadata[] = Reflect.getMetadata('routes', classRef.component) || [];
+      
+      if (routes.length === 0) {
+        console.warn(`Aucune route trouvée pour le contrôleur ${classRef.component.name}`);
+        return;
       }
-    });
-
-    if (io) {
-      const wsEvents: WsEventMetadata[] = Reflect.getMetadata('wsEvents', ControllerClass) || [];
-      io.on('connection', (socket: any) => {
-        wsEvents.forEach((event: WsEventMetadata) => {
-          const handler = event.handler.bind(controllerInstance);
-          if (event.event === 'connection') {
-            handler(socket);
+      // Normaliser le chemin de base
+      const normalizedBasePath: string = basePath
+        ? (basePath.startsWith('/') ? basePath : `/${basePath}`)
+        : '';
+        
+        routes.forEach((route: RouteMetadata) => {
+          const handler = route.handler.bind(controllerInstance);
+          const middlewares = route.middlewares || [];
+          const method = route.method as keyof Application;
+          const routePath: string = route.path.startsWith('/') ? route.path : `/${route.path}`;
+          const fullPath: string = `${normalizedBasePath}${routePath}`;
+    
+          if (typeof app[method] === 'function') {
+            console.log(`Enregistrement de la route: ${route.method.toUpperCase()} ${fullPath}`);
+    
+            (app[method])(fullPath, ...middlewares, handler);
           } else {
-            socket.on(event.event, (data: any) => handler(socket, data));
+            throw new Error(`La méthode HTTP '${String(method)}' n'est pas valide pour Express`);
           }
         });
-      });
     }
+
+
+
+
+
+
+
+    // if (io) {
+    //   const wsEvents: WsEventMetadata[] = Reflect.getMetadata('wsEvents', ControllerClass) || [];
+    //   io.on('connection', (socket: any) => {
+    //     wsEvents.forEach((event: WsEventMetadata) => {
+    //       const handler = event.handler.bind(controllerInstance);
+    //       if (event.event === 'connection') {
+    //         handler(socket);
+    //       } else {
+    //         socket.on(event.event, (data: any) => handler(socket, data));
+    //       }
+    //     });
+    //   });
+    // }
   }
 }

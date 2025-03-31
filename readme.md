@@ -1,4 +1,4 @@
-# HotSpring - A Lightweight TypeScript Express Framework with Dependency Injection
+# HotSpring - A Lightweight TypeScript Framework with Dependency Injection
 
 HotSpring is a modern TypeScript framework built on top of Express.js that provides dependency injection, decorators for routing, and structured application organization. It simplifies building scalable web applications by offering Spring-style annotations and automated component scanning.
 

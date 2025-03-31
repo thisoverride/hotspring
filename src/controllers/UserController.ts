@@ -1,7 +1,7 @@
 import { type Response, type Request } from 'express';
 import { Controller, GET } from '../core/framework/express/hotspring';
-import { HttpStatusCodes } from '../core';
 import { DefaultService } from '../services';
+import { HttpStatusCodes } from '../core';
 
 @Controller('/user')
 export class UserController {

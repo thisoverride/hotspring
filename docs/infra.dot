@@ -1,0 +1,31 @@
+digraph INFRA {
+  node [ color = "black", fillcolor = "#E6E6E6", height =1, style = "filled,bold,rounded", fontname = "Arial" ];
+  "ExpressApplication" [ label = "ExpressApplication
+(AWS::Serverless::Function)", shape =rectangle, fillcolor = "#B7E0FF" ];
+  "ExpressMiddleware" [ label = "ExpressMiddleware
+(Custom::ExpressMiddleware)", shape =rectangle ];
+  "ErrorHandling" [ label = "ErrorHandling
+(Custom::ErrorHandling)", shape =rectangle ];
+  "IoC Container" [ label = "IoC Container
+(Custom::InversionOfControl)", shape =rectangle ];
+  "HotSpringApplication" [ label = "HotSpringApplication
+(Custom::ApplicationFramework)", shape =rectangle ];
+  "ComponentScanner" [ label = "ComponentScanner
+(Custom::ComponentScanner)", shape =rectangle ];
+  "Cors" [ label = "Cors
+(Custom::CorsMiddleware)", shape =rectangle, fillcolor = "#E78F81" ];
+  "Morgan" [ label = "Morgan
+(Custom::LoggingMiddleware)", shape =rectangle ];
+  "Helmet" [ label = "Helmet
+(Custom::SecurityMiddleware)", shape =rectangle ];
+  "ExpressJson" [ label = "ExpressJson
+(Custom::JsonMiddleware)", shape =rectangle ];
+  "ExpressApplication" -> "ExpressMiddleware";
+  "ExpressApplication" -> "ErrorHandling";
+  "ExpressApplication" -> "IoC Container";
+  "ExpressMiddleware" -> "Cors";
+  "ExpressMiddleware" -> "Morgan";
+  "ExpressMiddleware" -> "Helmet";
+  "ExpressMiddleware" -> "ExpressJson";
+  "HotSpringApplication" -> "ExpressApplication";
+}

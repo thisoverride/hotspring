@@ -17,13 +17,12 @@ interface WsEventMetadata {
 
 export default class HotSpring {
   public static bind(app: Application, ioContainer: Container, classRef: DependecyComponentInfo, io?: any): void {
-
+    
     const controllerInstance = ioContainer.get(classRef.component);
     injectable()(controllerInstance);
-
     if (classRef.type === 'controller') {
-      const basePath: string = Reflect.getMetadata('prefix', classRef.component) || '';
-      // Récupérer les métadonnées des routes
+      const basePath: string = Reflect.getMetadata('an_ctrl', classRef.component) || '';
+
       const routes: RouteMetadata[] = Reflect.getMetadata('routes', classRef.component) || [];
       
       if (routes.length === 0) {
@@ -42,9 +41,7 @@ export default class HotSpring {
           const routePath: string = route.path.startsWith('/') ? route.path : `/${route.path}`;
           const fullPath: string = `${normalizedBasePath}${routePath}`;
     
-          if (typeof app[method] === 'function') {
-            console.log(`Enregistrement de la route: ${route.method.toUpperCase()} ${fullPath}`);
-    
+          if (typeof app[method] === 'function') {    
             (app[method])(fullPath, ...middlewares, handler);
           } else {
             throw new Error(`La méthode HTTP '${String(method)}' n'est pas valide pour Express`);

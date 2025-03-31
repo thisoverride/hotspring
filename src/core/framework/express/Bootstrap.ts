@@ -4,7 +4,7 @@ import { configureMiddleware } from './config/middleware';
 import { configureErrorHandling } from './config/errorHandling';
 import { Logger } from '../utils/logger/Logger'
 import { HotSpring } from './hotspring';
-import { ComponentInfo, Constructor, DependecyComponentInfo } from '../../../@type/Global';
+import { ComponentInfo, DependecyComponentInfo } from '../../../@type/Global';
 
 export class Bootstrap {
   private readonly _app: Application;
@@ -12,20 +12,20 @@ export class Bootstrap {
   private readonly _logger: Logger;
   private _isInitialized: boolean = false;
 
-  constructor(controllerClasses: ComponentInfo[], logger?: Logger) {
+  constructor(components: ComponentInfo[], logger?: Logger) {
     this._logger = logger ?? new Logger();
     this._app = express();
     this._IoCContainer = new Container();
-    this._initialize(controllerClasses);
+    this._initialize(components);
   }
 
-  private async _initialize(controllerClasses: ComponentInfo[]): Promise<void> {
+  private async _initialize(components: ComponentInfo[]): Promise<void> {
     try {
-      this._injectControllers(controllerClasses);
-      this._configureApp(controllerClasses);
+      this._injectComponents(components);
+      this._configureApp(components);
       this._isInitialized = true;
       this._logger.info('Application initialization completed');
-      await this._start(3000);
+      await this._start(8000);
     } catch (error: unknown) {
       console.log(error)
       this._logger.error('Failed to initialize application:', error);
@@ -33,31 +33,45 @@ export class Bootstrap {
     }
   }
 
-  private _injectControllers(controllerClasses: ComponentInfo[]): void {
-    if (controllerClasses.length === 0) {
-      this._logger.warn('No controllers to inject');
+  private _injectComponents(components: ComponentInfo[]): void {
+    if (components.length === 0) {
+      this._logger.warn('No components to inject');
       return;
     }
-
-    this._logger.info(`Injecting ${controllerClasses.length} controllers into IoC container`);
-    controllerClasses.forEach((classRef: DependecyComponentInfo) => {
+    
+    this._logger.info(`Injecting ${components.length} components into IoC container`);
+    
+    components.forEach((classRef: DependecyComponentInfo) => {
       this._IoCContainer.bind(classRef.component).toSelf();
-      this._logger.debug(`Injected controller: ${classRef.component.name}`);
+      
+      // Logs spécifiques selon le type de composant
+      if (classRef.type === 'controller') {
+        this._logger.debug(`Injected controller: ${classRef.component.name}`);
+      } else if (classRef.type === 'service') {
+        this._logger.debug(`Injected service: ${classRef.component.name}`);
+      } else if (classRef.type === 'repository') {
+        this._logger.debug(`Injected repository: ${classRef.component.name}`);
+      } else {
+        this._logger.debug(`Injected component of type ${classRef.type}: ${classRef.component.name}`);
+      }
     });
   }
 
-  private _configureApp(controllerClasses: ComponentInfo[]): void {
+  private _configureApp(components: ComponentInfo[]): void {
     this._logger.info('Configuring Express application...');
     
-    // Configure middleware
     configureMiddleware(this._app, this._logger);
     
-    // Bind controllers to routes
-    if (controllerClasses.length > 0) {
-      this._logger.info(`Binding routes for ${controllerClasses.length} controllers`);
+    const controllers = components.filter(c => (c as DependecyComponentInfo).type === 'controller');
+    
+    if (controllers.length > 0) {
+      this._logger.info(`Binding routes for ${controllers.length} controllers`);
       
-      controllerClasses.forEach((classRef: DependecyComponentInfo) => {
-        this._logger.info(`Binding routes for controller: ${classRef.component.name}`);
+      components.forEach((classRef: DependecyComponentInfo) => {
+        if (classRef.type === 'controller') {
+          this._logger.info(`Binding routes for controller: ${classRef.component.name}`);
+        }
+        
         HotSpring.bind(this._app, this._IoCContainer, classRef);
       });
     } else {
@@ -66,7 +80,6 @@ export class Bootstrap {
     
     // Configure error handling (should be last)
     configureErrorHandling(this._app);
-    
     this._logger.info('Express application configuration completed');
   }
 
@@ -75,19 +88,19 @@ export class Bootstrap {
       this._logger.info('Application not initialized, initializing now...');
       await this._initialize([]);
     }
-
+    
     return new Promise<void>((resolve, reject) => {
       try {
         const server = this._app.listen(port, () => {
           this._logger.info(`Server running on http://localhost:${port}`);
           resolve();
         });
-
+        
         server.on('error', (error) => {
           this._logger.error(`Failed to start server: ${error.message}`);
           reject(error);
         });
-
+        
         // Handle graceful shutdown
         process.on('SIGTERM', () => {
           this._logger.info('SIGTERM received, shutting down gracefully');
@@ -102,5 +115,4 @@ export class Bootstrap {
       }
     });
   }
-
 }

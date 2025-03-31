@@ -1,18 +1,5 @@
-import path from 'path';
 import 'reflect-metadata';
-import { Configurator } from '../../core/Configurator';
-import { HotSpringConfig } from '../../../../../../@type/Global';
-
-type ClassType = 'controller' | 'service' | 'repository';
-
-function Component(type: ClassType, path?: string): ClassDecorator {
-  return (target: Function) => {
-    Reflect.defineMetadata('componentType', {type , path}, target);
-  };
-}
-
-
-// Autowired
+import { ClassType, HotSpringConfig } from '../../../../../../@type/Global';
 
 export function HotSpringApplication(config?: HotSpringConfig) {
   return function (target: Function) {
@@ -20,22 +7,23 @@ export function HotSpringApplication(config?: HotSpringConfig) {
   };
 }
 
-
+export function Repository() {
+  return function (target: Function) {
+    Reflect.defineMetadata("an_repo", true, target);
+  };
+}
 
 export function Service() {
   return function (target: Function) {
-    Reflect.defineMetadata("service", true, target);
+    Reflect.defineMetadata("an_svc", true, target);
   };
 }
 
 export function Controller(prefix: string = '') {
   return function (target: Function) {
-    Reflect.defineMetadata('prefix', prefix, target);
+    Reflect.defineMetadata('an_ctrl', prefix, target);
   };
 }
-
-
-
 
 
 export function getComponentsByType(type: ClassType, modules: any[]) {

@@ -55,14 +55,13 @@ export class UserController {
 
 2. Create a main application file:
 ```typescript
-import { HotSpringApplication } from '@common/annotations';
+import { HotApplication, HotSpringApplication } from '../common';
 
-@HotSpringApplication({
-  scanBasePackages: ['controllers', 'services', 'repository']
-})
+// Application will automatically scan and register components
+@HotSpringApplication()
 export class Main {
-  public static async start(): Promise<void> {
-    // Application will automatically scan and register components
+  public static async start (...args: string[]): Promise<void> {
+    void HotApplication.run(Main, args);
   }
 }
 ```

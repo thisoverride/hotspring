@@ -1,5 +1,5 @@
-import { Service } from '../core/framework/express/hotspring';
-import { DefaultRepository } from '../repository/UserRepository';
+import { Service } from '../../common';
+import { DefaultRepository } from '../../repository/UserRepository';
 
 @Service()
 export class DefaultService {
@@ -9,7 +9,7 @@ export class DefaultService {
   }
 
   public renderString (): string {
-    const name: string = this._defaultRepository.findByAppName('aled');
+    const name: string = this._defaultRepository.findByAppName('hotspring');
     return `<!DOCTYPE html>
     <html lang="fr">
     <head>

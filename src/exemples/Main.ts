@@ -1,5 +1,5 @@
 import { HotSpringApplication } from '../common';
-import { HotApplication } from './services/HotApplication';
+import { HotApplication } from '../common/core/boot/HotApplication';
 
 @HotSpringApplication()
 export class Main {

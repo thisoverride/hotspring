@@ -87,7 +87,6 @@ export class Bootstrap {
       this._logger.info('Application not initialized, initializing now...');
       await this._initialize([]);
     }
-    
     return new Promise<void>((resolve, reject) => {
       try {
         const server = this._app.listen(port, () => {

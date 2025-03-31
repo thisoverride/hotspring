@@ -44,7 +44,6 @@ export class Bootstrap {
     components.forEach((classRef: DependecyComponentInfo) => {
       this._IoCContainer.bind(classRef.component).toSelf();
       
-      // Logs spécifiques selon le type de composant
       if (classRef.type === 'controller') {
         this._logger.debug(`Injected controller: ${classRef.component.name}`);
       } else if (classRef.type === 'service') {

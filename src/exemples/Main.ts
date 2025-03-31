@@ -1,4 +1,4 @@
-import { HotSpringApplication } from './core/framework/express/hotspring';
+import { HotSpringApplication } from '../common';
 import { HotApplication } from './services/HotApplication';
 
 @HotSpringApplication()
@@ -7,6 +7,3 @@ export class Main {
     void HotApplication.run(Main, args);
   }
 }
-void (async () => {
-  await Main.start();
-})();

@@ -7,20 +7,17 @@ The framework features automatic dependency injection through Inversify, decorat
 ## Repository Structure
 ```
 .
-├── src/                          # Source code directory
-│   ├── @type/                   # TypeScript type definitions
-│   ├── controllers/             # HTTP request handlers and route definitions
-│   ├── core/                    # Framework core functionality
-│   │   ├── exception/          # Exception handling system
-│   │   ├── framework/         # Express integration and framework utilities
-│   │   │   ├── express/      # Express configuration and bootstrap
-│   │   │   └── utils/        # Utility functions and logger
-│   │   └── httpCode/         # HTTP status code definitions
-│   ├── repository/            # Data access layer components
-│   ├── services/             # Business logic layer
-│   └── Main.ts               # Application entry point
-├── package.json              # Project dependencies and scripts
-└── tsconfig.json            # TypeScript configuration
+├── docs/               # Documentation files
+├── src/               # Source code
+│   ├── @type/         # TypeScript type definitions
+│   ├── common/        # Common utilities and annotations
+│   │   ├── annotations/
+│   │   ├── enums/
+│   ├── core/         # Core framework implementation
+│   │   ├── exception/
+│   │   ├── framework/
+│   ├── exemples/     # Example implementations
+│   └── repository/   # Repository implementations
 ```
 
 ## Usage Instructions
@@ -45,11 +42,11 @@ yarn install
 ### Quick Start
 1. Create a new controller:
 ```typescript
-import { Controller, GET } from './core/framework/express/hotspring';
+import { Controller, Get } from '@common/annotations';
 
 @Controller('/api')
 export class UserController {
-  @GET('/users')
+  @Get('/users')
   public async getUsers() {
     return { users: [] };
   }
@@ -58,7 +55,7 @@ export class UserController {
 
 2. Create a main application file:
 ```typescript
-import { HotSpringApplication } from './core/framework/express/hotspring';
+import { HotSpringApplication } from '@common/annotations';
 
 @HotSpringApplication({
   scanBasePackages: ['controllers', 'services', 'repository']
@@ -78,7 +75,7 @@ npm run dev
 ### More Detailed Examples
 1. Creating a Service with Dependency Injection:
 ```typescript
-import { Service } from './core/framework/express/hotspring';
+import { Service } from '@common/annotations';
 
 @Service()
 export class UserService {
@@ -91,7 +88,7 @@ export class UserService {
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @GET('/users')
+  @Get('/users')
   public async getUsers() {
     return await this.userService.findAll();
   }

@@ -1,20 +1,19 @@
 import { type Response, type Request } from 'express';
-import { Controller, GET } from '../core/framework/express/hotspring';
+import { Controller, Get, HttpStatusCodes } from '../../common';
 import { DefaultService } from '../services';
-import { HttpStatusCodes } from '../core';
 
-@Controller('/user')
-export class UserController {
+@Controller()
+export class DefaultController {
   private readonly _defaultService: DefaultService;
   constructor (defaultService: DefaultService) {
     this._defaultService = defaultService;
   }
 
-  @GET('/ok')
+  @Get()
   public async default (_request: Request, response: Response): Promise<void> {
     try {
-      // const html: string = this._defaultService.renderString();
-      response.status(200).send('<div>USER</div>');
+      const html: string = this._defaultService.renderString();
+      response.status(HttpStatusCodes.OK).send(html);
     } catch (error: any) {
       response.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }

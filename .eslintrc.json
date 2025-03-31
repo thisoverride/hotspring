@@ -20,7 +20,7 @@
         },
         {
           "selector": "function",
-          "format": ["camelCase"],
+          "format": ["camelCase","PascalCase"],
           "leadingUnderscore": "allow"
         },
         {
@@ -55,7 +55,6 @@
       "@typescript-eslint/no-extraneous-class": "off"
     },
     "ignorePatterns": [
-      "webpack.config.js",
       "jest.config.js",
       "public/assets/js/**.js"
     ]

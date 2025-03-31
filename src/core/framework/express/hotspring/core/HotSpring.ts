@@ -10,13 +10,9 @@ interface RouteMetadata {
   middlewares: RequestHandler[];
 }
 
-interface WsEventMetadata {
-  event: string;
-  handler: Function;
-}
 
 export default class HotSpring {
-  public static bind(app: Application, ioContainer: Container, classRef: DependecyComponentInfo, io?: any): void {
+  public static bind(app: Application, ioContainer: Container, classRef: DependecyComponentInfo): void {
     
     const controllerInstance = ioContainer.get(classRef.component);
     injectable()(controllerInstance);
@@ -48,25 +44,5 @@ export default class HotSpring {
           }
         });
     }
-
-
-
-
-
-
-
-    // if (io) {
-    //   const wsEvents: WsEventMetadata[] = Reflect.getMetadata('wsEvents', ControllerClass) || [];
-    //   io.on('connection', (socket: any) => {
-    //     wsEvents.forEach((event: WsEventMetadata) => {
-    //       const handler = event.handler.bind(controllerInstance);
-    //       if (event.event === 'connection') {
-    //         handler(socket);
-    //       } else {
-    //         socket.on(event.event, (data: any) => handler(socket, data));
-    //       }
-    //     });
-    //   });
-    // }
-  }
+}
 }

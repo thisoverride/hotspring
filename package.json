@@ -6,8 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "devv": "node ./build/main/Main.js",
-    "dev": "tsx watch --env-file=.env  ./src/.bin/handler.ts",
+    "dev": "node ./dist/exemples/www/handler.js",
     "prod": "node build/main.js",
     "build": "tsc -b -diagnostics ",
     "test": "jest"
